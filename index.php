@@ -36,7 +36,7 @@ if (isset($_GET['delete_id'])) {
             background-color: #f5f5f5;
         }
         #map {
-            height: 340px;
+            height: 290px;
             width: 100%;
             box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
             border-radius: 12px;
@@ -63,11 +63,13 @@ if (isset($_GET['delete_id'])) {
     <div class="container">
         <div class="row">
             <!-- Map Section -->
-            <div class="col-md-12">
-                <h2 class="display-8 mb-4 text-center">Peta Jumlah Penduduk Godean dan Sekitarnya</h2>
+            <div class="col-md-12 text-center">
+                <h2 class="display-8 mb-4">Peta Jumlah Penduduk Godean dan Sekitarnya</h2>
+                <a href="tambah_data.php" class="btn btn-primary mb-3">Tambah Data</a>
                 <div id="map"></div>
             </div>
         </div>
+        
         <!-- Tabel Section -->
         <div class="table-container">
             <?php
@@ -94,6 +96,9 @@ if (isset($_GET['delete_id'])) {
                         <td style='padding: 6px;'>" . $row["luas"] . "</td>
                         <td class='text-end' style='padding: 6px;'><span class='badge bg-info'>" . number_format($row["jumlah_penduduk"]) . "</span></td>
                         <td class='text-center' style='padding: 6px;'>
+                            <button class='btn btn-outline-warning btn-sm' onclick='editData(".json_encode($row).")'>
+                                <i class='bi bi-pencil'></i>
+                            </button>
                             <a href='?delete_id=".$row["id"]."' onclick='return confirm(\"Apakah Anda yakin ingin menghapus data ini?\");' class='btn btn-outline-danger btn-sm'>
                                 <i class='bi bi-trash'></i>
                             </a>
@@ -107,6 +112,47 @@ if (isset($_GET['delete_id'])) {
             // Tutup koneksi
             $conn->close();
             ?>
+        </div>
+    </div>
+
+    <!-- Modal Edit Data -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="edit_data.php">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Data Penduduk</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="edit-id">
+                        <div class="mb-3">
+                            <label for="edit-kecamatan" class="form-label">Kecamatan</label>
+                            <input type="text" class="form-control" name="kecamatan" id="edit-kecamatan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-longitude" class="form-label">Longitude</label>
+                            <input type="text" class="form-control" name="longitude" id="edit-longitude" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-latitude" class="form-label">Latitude</label>
+                            <input type="text" class="form-control" name="latitude" id="edit-latitude" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-luas" class="form-label">Luas (km²)</label>
+                            <input type="text" class="form-control" name="luas" id="edit-luas" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-jumlah_penduduk" class="form-label">Jumlah Penduduk</label>
+                            <input type="text" class="form-control" name="jumlah_penduduk" id="edit-jumlah_penduduk" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" name="edit_data" class="btn btn-primary">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -136,6 +182,18 @@ if (isset($_GET['delete_id'])) {
             echo "console.log('No data found');";
         }
         ?>
+
+        // Function to load data into the edit modal
+        function editData(data) {
+            document.getElementById('edit-id').value = data.id;
+            document.getElementById('edit-kecamatan').value = data.kecamatan;
+            document.getElementById('edit-longitude').value = data.longitude;
+            document.getElementById('edit-latitude').value = data.latitude;
+            document.getElementById('edit-luas').value = data.luas;
+            document.getElementById('edit-jumlah_penduduk').value = data.jumlah_penduduk;
+            var editModal = new bootstrap.Modal(document.getElementById('editModal'));
+            editModal.show();
+        }
     </script>
 </body>
 </html>
